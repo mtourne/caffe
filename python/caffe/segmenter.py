@@ -12,12 +12,11 @@ class Segmenter(caffe.Net):
     """
     Segmenter
     """
-    def __init__(self, model_file, pretrained_file, 
+    def __init__(self, model_file, pretrained_file,
                  gpu=False):
         """
         """
-        caffe.Net.__init__(self, model_file, pretrained_file)
-        self.set_phase_test()
+        caffe.Net.__init__(self, model_file, pretrained_file, caffe.TEST)
 
         if gpu:
             self.set_mode_gpu()
@@ -31,7 +30,7 @@ class Segmenter(caffe.Net):
         Assume that the input is a 500 x 500 image BRG layout with
         correct padding as necessary to make it 500 x 500.
         """
-        
+
         input_ = np.zeros((len(inputs),
             500, 500, inputs[0].shape[2]),
             dtype=np.float32)
