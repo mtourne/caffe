@@ -1085,7 +1085,6 @@ message V1LayerParameter {
 
     CROP = 40;
     MULTI_STAGE_MEANFIELD = 42;
-    SIMPLE_FAST_MEANFIELD = 41;
   }
   optional LayerType type = 5;
   repeated BlobProto blobs = 6;
