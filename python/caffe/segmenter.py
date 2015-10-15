@@ -19,10 +19,10 @@ class Segmenter(caffe.Net):
         caffe.Net.__init__(self, model_file, pretrained_file, caffe.TEST)
 
         if gpu:
-            self.set_mode_gpu()
-            self.set_device(0)
+            caffe.set_mode_gpu()
+            caffe.set_device(0)
         else:
-            self.set_mode_cpu()
+            caffe.set_mode_cpu()
 
 
     def predict(self, inputs):
