@@ -292,11 +292,13 @@ class MeanfieldIteration {
    * Forward pass - to be called during inference.
    */
   virtual void Forward_cpu();
+  virtual void Forward_gpu();
 
   /**
    * Backward pass - to be called during training.
    */
   virtual void Backward_cpu();
+  virtual void Backward_gpu();
 
   // A quick hack. This should be properly encapsulated.
   vector<shared_ptr<Blob<Dtype> > >& blobs() {
@@ -352,13 +354,19 @@ class MultiStageMeanfieldLayer : public Layer<Dtype> {
   virtual inline const char* type() const {
     return "MultiStageMeanfield";
   }
+  virtual ~MultiStageMeanfieldLayer();
+
   virtual inline int ExactNumBottomBlobs() const { return 3; }
   virtual inline int ExactNumTopBlobs() const { return 1; }
 
  protected:
   virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
+  virtual void Forward_gpu(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
   virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
+      const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
+  virtual void Backward_gpu(const vector<Blob<Dtype>*>& top,
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
 
   virtual void compute_spatial_kernel(float* const output_kernel);
@@ -376,7 +384,11 @@ class MultiStageMeanfieldLayer : public Layer<Dtype> {
   Dtype theta_gamma_;
   int num_iterations_;
 
-  boost::shared_array<Dtype> norm_feed_;
+  bool init_cpu_;
+  bool init_gpu_;
+
+  //boost::shared_array<Dtype> norm_feed_;
+  Dtype* norm_feed_;
   Blob<Dtype> spatial_norm_;
   Blob<Dtype> bilateral_norms_;
 
@@ -389,7 +401,8 @@ class MultiStageMeanfieldLayer : public Layer<Dtype> {
   shared_ptr<SplitLayer<Dtype> > split_layer_;
 
   shared_ptr<ModifiedPermutohedral> spatial_lattice_;
-  boost::shared_array<float> bilateral_kernel_buffer_;
+  float* bilateral_kernel_buffer_;
+  //boost::shared_array<float> bilateral_kernel_buffer_;
   vector<shared_ptr<ModifiedPermutohedral> > bilateral_lattices_;
 };
 
